@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity, Image, ToastAndroid, ScrollView, Alert } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import { countryCodes } from "react-native-country-codes-picker/constants/countryCodes";
-import Icon from 'react-native-vector-icons/FontAwesome';
-import PickerSelect from 'react-native-picker-select';
 import { CountryPicker } from "react-native-country-codes-picker";
 
 
@@ -30,6 +27,7 @@ const LoginScreen = (props) => {
     //         icon: () => <Icon name={`flag-${country.alpha2Code.toLowerCase()}`} size={18} color="#2e6da4" />,
     //     };
     // });
+
 
     const handleEmailLogin = () => {
         setLoginWithEmail(true);
@@ -64,7 +62,12 @@ const LoginScreen = (props) => {
                 );
             } else {
 
-
+                ToastAndroid.showWithGravity(
+                    "Login Successfully",
+                    ToastAndroid.SHORT,
+                    ToastAndroid.CENTER,
+                );
+                navigation.navigate('HomeScreen')
             }
         } catch (error) {
 
