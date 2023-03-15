@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity, Image, ToastAndroid, ScrollView,alert, Alert } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
-const GOOGLE_MAPS_APIKEY = 'AIzaSyB4SPqkO0ZQbxT-EU4l886H9Y3ipf1NMW0';
+const GOOGLE_MAPS_APIKEY = 'GOOGLE_MAPS_APIKEY';
 
 const MapViewScreen = (props) => {
     
