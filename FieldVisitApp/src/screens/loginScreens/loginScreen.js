@@ -19,15 +19,6 @@ const LoginScreen = (props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    //const allCountries = countryCodes.getAll();
-    // const countries = allCountries.map((country) => {
-    //     return {
-    //         label: `${country.name} (+${country.callingCode})`,
-    //         value: country.callingCode,
-    //         icon: () => <Icon name={`flag-${country.alpha2Code.toLowerCase()}`} size={18} color="#2e6da4" />,
-    //     };
-    // });
-
 
     const handleEmailLogin = () => {
         setLoginWithEmail(true);
@@ -46,33 +37,33 @@ const LoginScreen = (props) => {
     }
 
     const handleLogin = async () => {
-        try {
+        // try {
 
-            if (email.length <= 2) {
-                ToastAndroid.showWithGravity(
-                    "Please Enter Correct Email",
-                    ToastAndroid.SHORT,
-                    ToastAndroid.CENTER,
-                );
-            } else if (password.length < 8) {
-                ToastAndroid.showWithGravity(
-                    "Please Enter Correct Password",
-                    ToastAndroid.SHORT,
-                    ToastAndroid.CENTER,
-                );
-            } else {
+        //     if (email.length <= 2) {
+        //         ToastAndroid.showWithGravity(
+        //             "Please Enter Correct Email",
+        //             ToastAndroid.SHORT,
+        //             ToastAndroid.CENTER,
+        //         );
+        //     } else if (password.length < 8) {
+        //         ToastAndroid.showWithGravity(
+        //             "Please Enter Correct Password",
+        //             ToastAndroid.SHORT,
+        //             ToastAndroid.CENTER,
+        //         );
+        //     } else {
 
-                ToastAndroid.showWithGravity(
-                    "Login Successfully",
-                    ToastAndroid.SHORT,
-                    ToastAndroid.CENTER,
-                );
+        //         ToastAndroid.showWithGravity(
+        //             "Login Successfully",
+        //             ToastAndroid.SHORT,
+        //             ToastAndroid.CENTER,
+        //         );
                 navigation.navigate('HomeScreen')
-            }
-        } catch (error) {
+        //     }
+        // } catch (error) {
 
-            console.error(error);
-        }
+        //     console.error(error);
+        // }
     };
 
     return (

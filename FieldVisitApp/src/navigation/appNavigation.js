@@ -6,7 +6,6 @@ import LoginScreen from "../screens/loginScreens/loginScreen";
 import MapViewScreen from "../screens/TrackMap";
 import HomeScreen from "../screens/HomeScreen/homeScreen";
 
-
 const Stack = createNativeStackNavigator();
 
 
