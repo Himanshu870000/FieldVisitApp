@@ -3,8 +3,6 @@ import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity, Image, Toa
 import LinearGradient from "react-native-linear-gradient";
 import { CountryPicker } from "react-native-country-codes-picker";
 
-
-
 const LoginScreen = (props) => {
     const { navigation } = props;
     const [loginWithEmail, setLoginWithEmail] = useState(true);
@@ -58,7 +56,7 @@ const LoginScreen = (props) => {
         //             ToastAndroid.SHORT,
         //             ToastAndroid.CENTER,
         //         );
-                navigation.navigate('HomeScreen')
+        navigation.navigate('HomeScreen')
         //     }
         // } catch (error) {
 
@@ -152,11 +150,11 @@ const LoginScreen = (props) => {
                                         onPress={() => setShow(true)}
                                         style={{
                                             height: 40,
-                                            marginTop:20,
-                                            marginLeft:10,
+                                            marginTop: 20,
+                                            marginLeft: 10,
                                             backgroundColor: 'white',
                                             padding: 10,
-                                            borderRadius:15,
+                                            borderRadius: 15,
 
                                         }}
                                     >
@@ -172,7 +170,7 @@ const LoginScreen = (props) => {
                                     <CountryPicker
                                         show={show}
                                         // when picker button press you will get the country object with dial code
-                                        style={{width:150}}
+                                        style={{ width: 150 }}
                                         pickerButtonOnPress={(item) => {
                                             console.log(item);
                                             setCountryCode(item.dial_code);
@@ -249,10 +247,10 @@ const styles = StyleSheet.create({
         fontWeight: '400',
     },
 
-    inputPhone:{
+    inputPhone: {
         paddingVertical: 5,
         borderBottomWidth: 1,
-        marginLeft:90,
+        marginLeft: 90,
         borderStartWidth: 2,
         borderEndWidth: 200,
         fontSize: 14,
@@ -279,7 +277,7 @@ const styles = StyleSheet.create({
         borderRadius: 40,
         alignItems: 'center'
     },
-    ReqstOtpButton:{
+    ReqstOtpButton: {
         backgroundColor: "#F2890A",
         marginHorizontal: 32,
         marginTop: 54,
@@ -297,10 +295,10 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
 
-    CountryCodecontainer:{
-        height:20,
-        width:80,
-        marginRight:10,
+    CountryCodecontainer: {
+        height: 20,
+        width: 80,
+        marginRight: 10,
     },
 
 

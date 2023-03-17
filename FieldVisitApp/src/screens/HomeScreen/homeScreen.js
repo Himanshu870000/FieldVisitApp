@@ -33,7 +33,7 @@ const HomeScreen = (props) => {
     const [startDay, setStartDay] = useState(false);
     const [endDay, setEndDay] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    
+
 
     const [filteredItems, setFilteredItems] = useState(VisitList);
     const filterItems = query => {
@@ -47,7 +47,7 @@ const HomeScreen = (props) => {
         });
         setFilteredItems(filtered);
     };
-    
+
     const getTextValues = item => {
         const name = 'Amar Singh'; // replace with the actual name value in the item object
         const address = 'JP Nagar 7th Phase, Bangalore, Karnataka, India, 560068'; // replace with the actual address value in the item object
@@ -60,7 +60,7 @@ const HomeScreen = (props) => {
     //     const status = 'Pending'; // replace with the actual status value in the item object
     //     return { name, address, status };
     // };
-    
+
     // const [searchQuery, setSearchQuery] = useState('');
     // const [filteredItems, setFilteredItems] = useState([]);
     // const items = ['apple', 'banana', 'orange', 'grape', 'pineapple', 'mango', 'apple', 'banana', 'pear', 'grape', 'orange', 'pineapple', 'mango', 'watermelon', 'kiwi', 'strawberry', 'blueberry', 'raspberry', 'blackberry', 'peach', 'plum', 'cherry', 'lemon', 'lime', 'coconut', 'papaya'];
@@ -210,32 +210,32 @@ const HomeScreen = (props) => {
                         />
                     </View> */}
                     <ScrollView>
-                    {filteredItems.map(item => (
-                        <View style={styles.cardContainer} key={item.id}>
-                            <Text style={{ color: '#ffffff', fontWeight: '500', marginLeft: 30, marginTop: 20 }}>Amar Singh</Text>
-                            <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Address : JP Nagar 7th Phase, Bangalore, Karnataka, India, 560068</Text>
-                            <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Phone Number</Text>
-                            <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Status : Pending</Text>
-                            <View style={{ flexDirection: 'row', marginTop: 20 }}>
-                                <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={startVisitHandle}>
-                                    <Text style={styles.StartButtonText}>Start Visit</Text>
-                                </TouchableOpacity>
+                        {filteredItems.map(item => (
+                            <View style={styles.cardContainer} key={item.id}>
+                                <Text style={{ color: '#ffffff', fontWeight: '500', marginLeft: 30, marginTop: 20 }}>Amar Singh</Text>
+                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Address : JP Nagar 7th Phase, Bangalore, Karnataka, India, 560068</Text>
+                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Phone Number</Text>
+                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Status : Pending</Text>
+                                <View style={{ flexDirection: 'row', marginTop: 20 }}>
+                                    <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={startVisitHandle}>
+                                        <Text style={styles.StartButtonText}>Start Visit</Text>
+                                    </TouchableOpacity>
 
-                                <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={handleNavigate}>
-                                    <Text style={styles.StartButtonText}>Navigate</Text>
+                                    <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={handleNavigate}>
+                                        <Text style={styles.StartButtonText}>Navigate</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <TouchableOpacity style={styles.rescheduleButton}>
+                                    <Text style={styles.rescheduleText}>Reschedule</Text>
                                 </TouchableOpacity>
                             </View>
-                            <TouchableOpacity style={styles.rescheduleButton}>
-                                <Text style={styles.rescheduleText}>Reschedule</Text>
-                            </TouchableOpacity>
-                        </View>
-                    ))}
+                        ))}
                     </ScrollView>
 
                 </View>
             ) : (
                 <View><Text style={{ color: '#000000' }}>Visited Customers</Text>
-                <TextInput
+                    <TextInput
                         placeholder="Search"
                         style={{ backgroundColor: '#DEDEDE', width: 300, height: 40, justifyContent: 'center', alignItems: 'center', borderRadius: 12 }}
                         onChangeText={query => {
@@ -253,26 +253,26 @@ const HomeScreen = (props) => {
                         />
                     </View> */}
                     <ScrollView>
-                    {filteredItems.map(item => (
-                        <View style={styles.secondcardContainer} key={item.id}>
-                            <Text style={{ color: '#ffffff', fontWeight: '500', marginLeft: 30, marginTop: 20 }}>Ajeet Singh</Text>
-                            <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Address : JP Nagar 7th Phase, Bangalore, Karnataka, India, 560068</Text>
-                            <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Phone Number</Text>
-                            <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Status : Pending</Text>
-                            <View style={{ flexDirection: 'row', marginTop: 20 }}>
-                                <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={startVisitHandle}>
-                                    <Text style={styles.StartButtonText}>Start Visit</Text>
-                                </TouchableOpacity>
+                        {filteredItems.map(item => (
+                            <View style={styles.secondcardContainer} key={item.id}>
+                                <Text style={{ color: '#ffffff', fontWeight: '500', marginLeft: 30, marginTop: 20 }}>Ajeet Singh</Text>
+                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Address : JP Nagar 7th Phase, Bangalore, Karnataka, India, 560068</Text>
+                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Phone Number</Text>
+                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Status : Pending</Text>
+                                <View style={{ flexDirection: 'row', marginTop: 20 }}>
+                                    <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={startVisitHandle}>
+                                        <Text style={styles.StartButtonText}>Start Visit</Text>
+                                    </TouchableOpacity>
 
-                                <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={handleNavigate}>
-                                    <Text style={styles.StartButtonText}>Navigate</Text>
+                                    <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={handleNavigate}>
+                                        <Text style={styles.StartButtonText}>Navigate</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <TouchableOpacity style={styles.rescheduleButton}>
+                                    <Text style={styles.rescheduleText}>Reschedule</Text>
                                 </TouchableOpacity>
                             </View>
-                            <TouchableOpacity style={styles.rescheduleButton}>
-                                <Text style={styles.rescheduleText}>Reschedule</Text>
-                            </TouchableOpacity>
-                        </View>
-                    ))}
+                        ))}
                     </ScrollView>
                 </View>
 
