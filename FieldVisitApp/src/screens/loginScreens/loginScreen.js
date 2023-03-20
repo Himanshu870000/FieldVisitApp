@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity, Image, ToastAndroid, ScrollView, Alert } from "react-native";
+import { Button, StyleSheet, Text, TextInput, View,Linking,Platform, TouchableOpacity, Image, ToastAndroid, ScrollView, Alert } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { CountryPicker } from "react-native-country-codes-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LoginApi } from "../../API/AuthApi";
+import Geolocation from "@react-native-community/geolocation";
 
 const LoginScreen = (props) => {
     const { navigation } = props;
@@ -12,8 +15,6 @@ const LoginScreen = (props) => {
     const [show, setShow] = useState(false);
     const [countryCode, setCountryCode] = useState('');
     const [countryFlag, setCountryFlag] = useState('');
-
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -26,42 +27,54 @@ const LoginScreen = (props) => {
         setLoginWithEmail(false);
     }
 
-    const handleEmailSubmit = () => {
-        // handle email login
-    }
 
-    const handlePhoneSubmit = () => {
-        // handle phone login
+
+    const requestOtp = () => {
+        navigation.navigate('OtpVerification')
     }
 
     const handleLogin = async () => {
-        // try {
+    //     try {
 
-        //     if (email.length <= 2) {
-        //         ToastAndroid.showWithGravity(
-        //             "Please Enter Correct Email",
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.CENTER,
-        //         );
-        //     } else if (password.length < 8) {
-        //         ToastAndroid.showWithGravity(
-        //             "Please Enter Correct Password",
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.CENTER,
-        //         );
-        //     } else {
+    //         if (email.length <= 2) {
+    //             ToastAndroid.showWithGravity(
+    //                 "Please Enter Correct Email",
+    //                 ToastAndroid.SHORT,
+    //                 ToastAndroid.CENTER,
+    //             );
+    //         } else if (password.length < 6) {
+    //             ToastAndroid.showWithGravity(
+    //                 "Please Enter Correct Password",
+    //                 ToastAndroid.SHORT,
+    //                 ToastAndroid.CENTER,
+    //             );
+    //         } else {
 
-        //         ToastAndroid.showWithGravity(
-        //             "Login Successfully",
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.CENTER,
-        //         );
-        navigation.navigate('HomeScreen')
-        //     }
-        // } catch (error) {
+    //             const payload = {
+    //                 email,
+    //                 password,
+    //             }
+    //             LoginApi(payload).then(async (response) => {
+    //                 if (response.status > 0 && response.status < 400) {
+    //                     const token = response.data.token;
+    //                     await AsyncStorage.setItem('token', token);
+    //                     ToastAndroid.showWithGravity(
+    //                         "Succesfully Logged in",
+    //                         ToastAndroid.SHORT,
+    //                         ToastAndroid.CENTER,
+    //                     );
+                        
+                        navigation.replace('HomeScreen');
 
-        //     console.error(error);
-        // }
+    //                 } else {
+    //                     console.log(response.status, 'Login Error');
+    //                 }
+    //             });
+    //         }
+    //     } catch (error) {
+
+    //         console.error(error);
+    //     }
     };
 
     return (
@@ -194,7 +207,7 @@ const LoginScreen = (props) => {
                             <TouchableOpacity
                                 style={styles.ReqstOtpButton}
                                 onPress={() => {
-                                    handleLogin();
+                                    requestOtp();
                                 }}>
                                 <Text style={{ color: "#FFFFFF", fontWeight: '500' }}>Request OTP</Text>
                             </TouchableOpacity>

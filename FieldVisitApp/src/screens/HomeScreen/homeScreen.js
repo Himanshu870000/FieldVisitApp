@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity, FlatList, Image, Linking, ToastAndroid, ScrollView, Alert } from "react-native";
+import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity,PermissionsAndroid, FlatList, Image, Linking, ToastAndroid, ScrollView, Alert } from "react-native";
 import moment from 'moment';
 import { Card } from "react-native-elements";
+import Geolocation from "@react-native-community/geolocation";
+// import AwesomeAlert from "react-native-awesome-alerts";
 
 const VisitList = [
     {
@@ -29,12 +31,22 @@ const VisitList = [
 
 
 const HomeScreen = (props) => {
+
+    // navigate or replace screen 
     const { navigation } = props;
+
+    const [currentLocation, setCurrentLocation] = useState(null);
+
+
+    // start and end day state
     const [startDay, setStartDay] = useState(false);
     const [endDay, setEndDay] = useState(false);
+
+    // search query state
     const [searchQuery, setSearchQuery] = useState('');
 
 
+    // searching user VisitList state and method
     const [filteredItems, setFilteredItems] = useState(VisitList);
     const filterItems = query => {
         const filtered = VisitList.filter(item => {
@@ -47,20 +59,25 @@ const HomeScreen = (props) => {
         });
         setFilteredItems(filtered);
     };
-
+    
     const getTextValues = item => {
         const name = 'Amar Singh'; // replace with the actual name value in the item object
         const address = 'JP Nagar 7th Phase, Bangalore, Karnataka, India, 560068'; // replace with the actual address value in the item object
         const status = 'Pending'; // replace with the actual status value in the item object
         return { name, address, status };
     };
+
+
+
+    // 2nd Method of searching users visitList --------------->
+
     // const getTextValues1 = item => {
     //     const name = 'Ajeet Singh'; // replace with the actual name value in the item object
     //     const address = 'JP Nagar 7th Phase, Bangalore, Karnataka, India, 560068'; // replace with the actual address value in the item object
     //     const status = 'Pending'; // replace with the actual status value in the item object
     //     return { name, address, status };
     // };
-
+    
     // const [searchQuery, setSearchQuery] = useState('');
     // const [filteredItems, setFilteredItems] = useState([]);
     // const items = ['apple', 'banana', 'orange', 'grape', 'pineapple', 'mango', 'apple', 'banana', 'pear', 'grape', 'orange', 'pineapple', 'mango', 'watermelon', 'kiwi', 'strawberry', 'blueberry', 'raspberry', 'blackberry', 'peach', 'plum', 'cherry', 'lemon', 'lime', 'coconut', 'papaya'];
@@ -102,6 +119,10 @@ const HomeScreen = (props) => {
     //         </View>
     //     );
     // }
+
+
+
+    // Toggle button state
     const [customerToVisit, setCustomerToVisit] = useState(true);
 
 
@@ -132,42 +153,125 @@ const HomeScreen = (props) => {
     }
 
 
+    // to display Current Day month and year
     const today = moment().format('Do');
     const today1 = moment().format('MMMM  YYYY');
 
 
+
+
+    // Navigate g-MAp by google Api key
     const handleNavigate = async () => {
         if (!startDay) {
-            Alert.alert('Please start your day first');
-            return;
+          Alert.alert('Please start your day first');
+          return;
         }
+       navigation.navigate('MapViewScreen')
+      };
 
-        navigation.navigate('MapViewScreen')
-    }
 
-    const handleGetDirections = () => {
-        const origin = "bengaluru, india";
-        const destination = "bengaluru, india";
-        const path = "12.972442,77.580643|12.9083,77.6051"; // path in the format of latitude,longitude
-        const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving&waypoints=${path}`;
-        Linking.openURL(url);
-    }
+
+    // navigate user by thier inbuilt g_Map app
+    
+    useEffect(() => {
+        Geolocation.getCurrentPosition(
+          position => {
+            setCurrentLocation(position.coords);
+          },
+          error => {
+            console.log(error);
+          }
+        );
+      }, []);
+    
+        // navigate user by thier inbuilt g_Map app
+        const handleGetDirections = () => {
+          // Check if we have permission to access the user's location
+          let hasLocationPermission = false;
+          if (Platform.OS === 'android') {
+            hasLocationPermission =  PermissionsAndroid.check(
+              PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+            );
+            if (!hasLocationPermission) {
+              try {
+                const granted = PermissionsAndroid.request(
+                  PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+                );
+                hasLocationPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
+              } catch (err) {
+                console.warn(err);
+                return;
+              }
+            }
+          } else {
+            hasLocationPermission = true; 
+          }
+        
+          if (hasLocationPermission) {
+            // Get the user's current location
+            try {
+              Geolocation.getCurrentPosition(
+                position => {
+                  if (position && position.coords) {
+                    const origin = `${position.coords.latitude},${position.coords.longitude}`;
+                    const destination = "bengaluru, india";
+                    const path = `${origin}|12.9083,77.6051`; // Add the user's location to the path
+                    const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving&waypoints=${path}`;
+                    Linking.openURL(url);
+                  }
+                },
+                error => {
+                  console.warn(error);
+                  switch (error.code) {
+                    case 1:
+                      console.log('Permission Denied');
+                      break;
+                    case 2:
+                      console.log('Position Unavailable');
+                      break;
+                    case 3:
+                      console.log('Timeout');
+                      break;
+                    default:
+                      console.log('Activity Null');
+                      break;
+                  }
+                },
+                {
+                  enableHighAccuracy: true,
+                  timeout: 20000,
+                }
+              );
+            } catch (error) {
+              console.warn(error);
+            }
+          } else {
+            console.log('Location permission denied');
+          }
+        };
+        
+
+    // Here our Screen Content Starts--------------------->
 
     return (
         <View style={styles.container}>
-            <View style={styles.TopBar}>
-                <TouchableOpacity style={{ color: '#ffffff', justifyContent: 'center', marginLeft: 20 }}><Text>User</Text></TouchableOpacity>
-                <Text style={{ color: '#ffffff', marginLeft: 10, marginTop: 8 }}>Ajeet Kumar</Text>
-                <Text style={{ color: 'orange', marginLeft: 150, marginTop: 8 }}>Logout</Text>
 
+            <View style={styles.TopBar}>
+                <TouchableOpacity style={{ color: '#ffffff', justifyContent: 'center', marginLeft: 20,marginTop:8 }}><Text>User</Text></TouchableOpacity>
+                <Text style={{ color: '#ffffff', marginLeft: 10, marginTop: 15 }}>Ajeet Kumar</Text>
+                <Text style={{ color: 'orange', marginLeft: 150, marginTop:15 }}>Logout</Text>
             </View>
+
 
             <View style={styles.dashboardCont}>
                 <TouchableOpacity><Text style={{ color: '#000000', fontSize: 35 }}>{'<'}</Text></TouchableOpacity>
                 <Text style={styles.dateText}>{today}</Text>
                 <TouchableOpacity><Text style={{ color: '#000000', fontSize: 35 }}>{'>'}</Text></TouchableOpacity>
-
+            <TouchableOpacity onPress={()=>{
+                navigation.navigate('DashboardScreen')
+            }}>
                 <Text style={{ color: '#084970', fontWeight: 700, marginLeft: 160, marginTop: 30, fontSize: 16, textDecorationLine: 'underline' }}>Dashboard</Text>
+                </TouchableOpacity>
             </View>
             <Text style={{ fontSize: 14, marginRight: 250, color: '#000000' }}>{today1}</Text>
 
@@ -181,6 +285,7 @@ const HomeScreen = (props) => {
                 </TouchableOpacity>
             </View>
 
+
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity onPress={handlecustomerToVisit}>
                     <Text style={customerToVisit ? styles.activeButtonText : styles.buttonText}>Customer to Visit</Text>
@@ -190,17 +295,23 @@ const HomeScreen = (props) => {
                     <Text style={!customerToVisit ? styles.activeButtonText : styles.buttonText}>Visited Customer</Text>
                 </TouchableOpacity>
             </View>
+
+
             {customerToVisit ? (
-                <View><Text style={{ color: '#000000' }}>Customer to visit</Text>
+                <View>
+
+
                     <TextInput
                         placeholder="Search"
-                        style={{ backgroundColor: '#DEDEDE', width: 300, height: 40, justifyContent: 'center', alignItems: 'center', borderRadius: 12 }}
+                        style={{ backgroundColor: '#DEDEDE', width: 300, height: 40,marginTop:20, justifyContent: 'center', alignItems: 'center', borderRadius: 12 }}
                         onChangeText={query => {
                             setSearchQuery(query);
                             filterItems(query);
                         }}
                         value={searchQuery}
                     />
+
+
                     {/* <View style={styles.row}>
                         <FlatList
                             data={VisitList}
@@ -209,41 +320,52 @@ const HomeScreen = (props) => {
                             horizontal={false}
                         />
                     </View> */}
-                    <ScrollView>
-                        {filteredItems.map(item => (
-                            <View style={styles.cardContainer} key={item.id}>
-                                <Text style={{ color: '#ffffff', fontWeight: '500', marginLeft: 30, marginTop: 20 }}>Amar Singh</Text>
-                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Address : JP Nagar 7th Phase, Bangalore, Karnataka, India, 560068</Text>
-                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Phone Number</Text>
-                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Status : Pending</Text>
-                                <View style={{ flexDirection: 'row', marginTop: 20 }}>
-                                    <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={startVisitHandle}>
-                                        <Text style={styles.StartButtonText}>Start Visit</Text>
-                                    </TouchableOpacity>
 
-                                    <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={handleNavigate}>
-                                        <Text style={styles.StartButtonText}>Navigate</Text>
-                                    </TouchableOpacity>
-                                </View>
-                                <TouchableOpacity style={styles.rescheduleButton}>
-                                    <Text style={styles.rescheduleText}>Reschedule</Text>
+
+                    <ScrollView>
+                    {filteredItems.map(item => (
+                        <View style={styles.cardContainer} key={item.id}>
+                            <Text style={{ color: '#ffffff', fontWeight: '500', marginLeft: 30, marginTop: 20 }}>Amar Singh</Text>
+                            <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Address : JP Nagar 7th Phase, Bangalore, Karnataka, India, 560068</Text>
+                            <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Phone Number</Text>
+                            <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Status : Pending</Text>
+                            <View style={{ flexDirection: 'row', marginTop: 20 }}>
+                                <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={startVisitHandle}>
+                                    <Text style={styles.StartButtonText}>Start Visit</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={handleNavigate}>
+                                    <Text style={styles.StartButtonText}>Navigate</Text>
                                 </TouchableOpacity>
                             </View>
-                        ))}
+                            <TouchableOpacity style={styles.rescheduleButton}  onPress={() => {
+                                    navigation.navigate('RescheduleScreen')
+                                }}>
+                                <Text style={styles.rescheduleText}>Reschedule</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ))}
                     </ScrollView>
+
 
                 </View>
             ) : (
-                <View><Text style={{ color: '#000000' }}>Visited Customers</Text>
-                    <TextInput
+
+
+                <View>
+
+
+                <TextInput
                         placeholder="Search"
-                        style={{ backgroundColor: '#DEDEDE', width: 300, height: 40, justifyContent: 'center', alignItems: 'center', borderRadius: 12 }}
+                        style={{ backgroundColor: '#DEDEDE', width: 300, height: 40,marginTop:20, justifyContent: 'center', alignItems: 'center', borderRadius: 12 }}
                         onChangeText={query => {
                             setSearchQuery(query);
                             filterItems(query);
                         }}
                         value={searchQuery}
                     />
+
+
                     {/* <View style={styles.row}>
                         <FlatList
                             data={VisitList}
@@ -252,44 +374,43 @@ const HomeScreen = (props) => {
                             horizontal={false}
                         />
                     </View> */}
-                    <ScrollView>
-                        {filteredItems.map(item => (
-                            <View style={styles.secondcardContainer} key={item.id}>
-                                <Text style={{ color: '#ffffff', fontWeight: '500', marginLeft: 30, marginTop: 20 }}>Ajeet Singh</Text>
-                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Address : JP Nagar 7th Phase, Bangalore, Karnataka, India, 560068</Text>
-                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Phone Number</Text>
-                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Status : Pending</Text>
-                                <View style={{ flexDirection: 'row', marginTop: 20 }}>
-                                    <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={startVisitHandle}>
-                                        <Text style={styles.StartButtonText}>Start Visit</Text>
-                                    </TouchableOpacity>
 
-                                    <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={handleNavigate}>
-                                        <Text style={styles.StartButtonText}>Navigate</Text>
-                                    </TouchableOpacity>
-                                </View>
-                                <TouchableOpacity style={styles.rescheduleButton}>
-                                    <Text style={styles.rescheduleText}>Reschedule</Text>
+
+                    <ScrollView>
+                    {/* {filteredItems.map(item => (
+                        <View style={styles.secondcardContainer} key={item.id}>
+                            <Text style={{ color: '#ffffff', fontWeight: '500', marginLeft: 30, marginTop: 20 }}>Ajeet Singh</Text>
+                            <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Address : JP Nagar 7th Phase, Bangalore, Karnataka, India, 560068</Text>
+                            <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Phone Number</Text>
+                            <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Status : Pending</Text>
+                            <View style={{ flexDirection: 'row', marginTop: 20 }}>
+                                <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={startVisitHandle}>
+                                    <Text style={styles.StartButtonText}>Start Visit</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={handleNavigate}>
+                                    <Text style={styles.StartButtonText}>Navigate</Text>
                                 </TouchableOpacity>
                             </View>
-                        ))}
+                            <TouchableOpacity style={styles.rescheduleButton}>
+                                <Text style={styles.rescheduleText}>Reschedule</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ))} */}
+                    <View style={{height:240,width:'80%',backgroundColor:'#fff',borderWidth:1,borderColor:'grey',justifyContent:'center',alignItems:'center',marginHorizontal:40,marginVertical:30}}>
+                            <Image
+                                source={require('../../assets/images/workNotDoneYet.png')}
+                            />
+                                                <Text style={{ color: '#000000', fontWeight: '300', marginTop: 10, fontSize: 10 }}>No Visit completed yet.</Text>
+
+                            </View>
                     </ScrollView>
+
+
                 </View>
 
             )}
-            <View>
 
-            </View>
-
-
-
-            <TouchableOpacity
-                style={{ height: 40, width: 100, backgroundColor: '#084970', marginTop: 40 }}
-
-                onPress={() => {
-                    handleGetDirections();
-                }}
-            ><Text style={{ color: "#FFFFFF", fontWeight: '500', alignSelf: 'center', marginTop: 5 }}>Start Visit</Text></TouchableOpacity>
         </View>
     );
 };

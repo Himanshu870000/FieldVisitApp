@@ -5,38 +5,24 @@ const validator = require("validator");
 dotenv.config({path:'../config.env'})
 const jwt = require("jsonwebtoken")
 const userRegister = new mongoose.Schema({
-    FirstName:{
-        type:String,
-        required:true,
-    },
-
-    LastName:{
+ 
+    name:{
         type:String,
         required:true
     },
 
-    Email:{
+    email:{
         type: String,
         required: true,
         unique: true,
-        validate(value) {
-          if (!validator.isEmail(value)) {
-              throw new Error("not valid email")
-          }
-      }
-
     },
 
 
-    Password:{
+    password:{
         type:String,
         required:true,
     },
 
-    passwordHint:{
-        type:String,
-        required:true,
-    },
 
     otp:{
         type:String,
@@ -54,38 +40,31 @@ const userRegister = new mongoose.Schema({
 
 //To hash password
 
-userRegister.pre('save', async function(next) {
-    const user = this;
-  
-    if (!user.isModified('Password')) {
-      return next();
+userRegister.pre('save',async function(next){
+    console.log('hi from inside')
+    if(this.isModified('password')){
+        this.password = await bcrypt.hash(this.password,12)
     }
-  
-    try {
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(user.Password, saltRounds);
-      user.Password = hashedPassword;
-      next();
-    } catch (error) {
-      return next(error);
-    }
-  });
-
+    next();
+})
 
 
 //To generate token
 
-userRegister.methods.generateAuthToken = async function  (){
-    try{
-        let token = jwt.sign({_id:this._id},process.env.SECRET_KEY);
-        this.tokens = this.tokens.concat({token:token});
-        await this.save();
-        return token;
-
-    }catch(err){
-        console.log(err)
+userRegister.methods.generateAuthToken = async function() {
+    try {
+      let token = jwt.sign(
+        { _id: this._id },
+        process.env.SECRET_KEY,
+        { expiresIn: '30m' } // token will expire in 30 minutes
+      );
+      this.tokens = this.tokens.concat({ token });
+      await this.save();
+      return token;
+    } catch (err) {
+      console.log(err);
     }
-}
+  };
 
 const users = mongoose.model('User',userRegister);
 module.exports = users;
