@@ -18,9 +18,23 @@ import {
 
 
 const DashboardScreen = (props) => {
-    const { navigation,date } = props;
+    const { navigation } = props;
 
-     
+    const [date, setDate] = useState(new Date());
+
+    const handleArrowPress = (direction) => {
+      const newDate = new Date(date);
+      if (direction === 'left') {
+        newDate.setDate(date.getDate() - 1);
+            console.log('lett----------->')
+      } else if(direction === 'right') {
+        newDate.setDate(date.getDate() + 1);
+        console.log('Right----------------->')
+      }
+      setDate(newDate);
+    };
+
+
     // to display Current Day month and year
     const today = moment().format('Do');
     const today1 = moment().format('MMMM , YYYY');
@@ -36,9 +50,9 @@ const DashboardScreen = (props) => {
             <ScrollView>
             <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20, }}>
                 <View style={styles.dashboardCont}>
-                    <TouchableOpacity><Text style={{ color: '#000000', fontSize: 35 }}>{'<'}</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{handleArrowPress('left')}}><Text style={{ color: '#000000', fontSize: 35 }}>{'<'}</Text></TouchableOpacity>
                     <Text style={styles.dateText}>{today}</Text>
-                    <TouchableOpacity><Text style={{ color: '#000000', fontSize: 35 }}>{'>'}</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={()=>handleArrowPress('right')}><Text style={{ color: '#000000', fontSize: 35 }}>{'>'}</Text></TouchableOpacity>
                 </View>
                 <Text style={{ fontSize: 14, color: '#000000' }}>{today1}</Text>
             </View>
@@ -92,7 +106,7 @@ const DashboardScreen = (props) => {
 
         </View>
 
-        <View style={{flexDirection:'row', justifyContent:'center'}}>
+        <View style={{flexDirection:'row', justifyContent:'center', marginBottom:40}}>
             <Text style={styles.Numbers}>30</Text>
             <Text style={styles.Numbers}>60</Text>
 
