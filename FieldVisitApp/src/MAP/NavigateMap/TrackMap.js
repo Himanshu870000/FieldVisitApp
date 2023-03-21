@@ -58,21 +58,21 @@ const MapViewScreen = (props) => {
         );
       };
       
-    // const takePicture = () => {
-    //     launchCamera(
-    //         {
-    //             mediaType: 'photo',
-    //             includeBase64: false,
-    //             maxHeight: 200,
-    //             maxWidth: 200,
-    //         },
-    //         (response) => {
-    //             if (!response.didCancel && !response.error) {
-    //                 setSelectedImage(response.uri);
-    //             }
-    //         }
-    //     );
-    // };
+    const takePicture = () => {
+        launchCamera(
+            {
+                mediaType: 'photo',
+                includeBase64: false,
+                maxHeight: 200,
+                maxWidth: 200,
+            },
+            (response) => {
+                if (!response.didCancel && !response.error) {
+                    setSelectedImage(response.uri);
+                }
+            }
+        );
+    };
 
     const [currentLocation, setCurrentLocation] = useState(null);
 
