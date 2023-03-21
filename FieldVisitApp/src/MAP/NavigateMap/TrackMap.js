@@ -4,43 +4,75 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 const GOOGLE_MAPS_APIKEY = ' AIzaSyB4SPqkO0ZQbxT-EU4l886H9Y3ipf1NMW0';
 import Geolocation from "@react-native-community/geolocation";
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 const MapViewScreen = (props) => {
 
     const [selectedImage, setSelectedImage] = useState(null);
 
     const pickImage = () => {
-        launchImageLibrary(
+        Alert.alert(
+          'Select Image Source',
+          'Choose the source of the image',
+          [
             {
-                mediaType: 'photo',
-                includeBase64: false,
-                maxHeight: 200,
-                maxWidth: 200,
+              text: 'Gallery',
+              onPress: () =>
+                launchImageLibrary(
+                  {
+                    mediaType: 'photo',
+                    includeBase64: false,
+                    maxHeight: 200,
+                    maxWidth: 200,
+                  },
+                  (response) => {
+                    if (!response.didCancel && !response.error) {
+                      setSelectedImage(response.uri);
+                    }
+                  },
+                ),
             },
-            (response) => {
-                if (!response.didCancel && !response.error) {
-                    setSelectedImage(response.uri);
-                }
-            }
-        );
-    };
-
-    const takePicture = () => {
-        launchCamera(
             {
-                mediaType: 'photo',
-                includeBase64: false,
-                maxHeight: 200,
-                maxWidth: 200,
+              text: 'Camera',
+              onPress: () =>
+                launchCamera(
+                  {
+                    mediaType: 'photo',
+                    includeBase64: false,
+                    maxHeight: 200,
+                    maxWidth: 200,
+                  },
+                  (response) => {
+                    if (!response.didCancel && !response.error) {
+                      setSelectedImage(response.uri);
+                    }
+                  },
+                ),
             },
-            (response) => {
-                if (!response.didCancel && !response.error) {
-                    setSelectedImage(response.uri);
-                }
-            }
+            {
+              text: 'Cancel',
+              style: 'cancel',
+            },
+          ],
+          { cancelable: true },
         );
-    };
+      };
+      
+    // const takePicture = () => {
+    //     launchCamera(
+    //         {
+    //             mediaType: 'photo',
+    //             includeBase64: false,
+    //             maxHeight: 200,
+    //             maxWidth: 200,
+    //         },
+    //         (response) => {
+    //             if (!response.didCancel && !response.error) {
+    //                 setSelectedImage(response.uri);
+    //             }
+    //         }
+    //     );
+    // };
 
     const [currentLocation, setCurrentLocation] = useState(null);
 
@@ -207,22 +239,26 @@ const MapViewScreen = (props) => {
                 </View>
                 <View style={{ flexDirection: "row" }}>
                     <View style={styles.bottomButton}>
-                        <TouchableOpacity>
-                            {/* {selectedImage && ( */}
-                                <Image
-                                    source={require('../../assets/images/uploadImageIcon.png')}
-                                />
+                        <TouchableOpacity
+                            onPress={pickImage}>
+                            <Image
+                                source={require('../../assets/images/uploadImageIcon.png')}
+                            />
 
-                            {/* )} */}
+                            {/* {selectedImage && (
+
+                            )} */}
                             {/* <View style={{flexDirection:"row"}}>
                             <Button title="P" onPress={pickImage} />
                             <Button title="T" onPress={takePicture} />
                             </View> */}
                         </TouchableOpacity>
+
+
                     </View>
 
                     <View style={styles.bottomButton}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={takePicture}>
                             <Image
                                 source={require('../../assets/images/convert.png')}
                             />
@@ -254,15 +290,21 @@ const MapViewScreen = (props) => {
                     </View>
 
                 </View>
-                <Text style={{ color: '#073E5F', fontWeight: '700', marginTop: 20, marginLeft:30,fontSize: 16}}>Uploads</Text>
+                <Text style={{ color: '#073E5F', fontWeight: '700', marginTop: 20, marginLeft: 30, fontSize: 16 }}>Uploads</Text>
 
-                            <View style={{height:240,width:'80%',backgroundColor:'#fff',borderWidth:1,borderColor:'grey',justifyContent:'center',alignItems:'center',marginHorizontal:40,marginVertical:30}}>
-                            <Image
-                                source={require('../../assets/images/workNotDoneYet.png')}
-                            />
-                                                <Text style={{ color: '#000000', fontWeight: '300', marginTop: 10, fontSize: 10 }}>No Uploads yet.</Text>
+                <View style={{ height: 240, width: '80%', backgroundColor: '#fff', borderWidth: 1, borderColor: 'grey', justifyContent: 'center', alignItems: 'center', marginHorizontal: 40, marginVertical: 30 }}>
+                    <Image
+                        source={require('../../assets/images/workNotDoneYet.png')}
+                    />
+                    {selectedImage && (
+                        <Image
+                        source={require('../../assets/images/')}
+                    />
+                            )}
 
-                            </View>
+                    <Text style={{ color: '#000000', fontWeight: '300', marginTop: 10, fontSize: 10 }}>No Uploads yet.</Text>
+
+                </View>
             </ScrollView>
         </View>
 

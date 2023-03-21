@@ -3,7 +3,7 @@ import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity, Permission
 import moment from 'moment';
 import { Card } from "react-native-elements";
 import Geolocation from "@react-native-community/geolocation";
-// import AwesomeAlert from "react-native-awesome-alerts";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 const VisitList = [
     {
@@ -35,29 +35,27 @@ const HomeScreen = (props) => {
     // navigate or replace screen 
     const { navigation } = props;
 
+
+
     const [currentLocation, setCurrentLocation] = useState(null);
 
 
     // start and end day state
     const [startDay, setStartDay] = useState(false);
     const [endDay, setEndDay] = useState(false);
+    const[showAlert,setShowAlert] = useState()
+    
+    const showAlert1 = () => {
+        setShowAlert(true);
+    };
 
+    const hideAlert = () => {
+        setShowAlert(false);
+    };
     // search query state
     const [searchQuery, setSearchQuery] = useState('');
 
-    const [date, setDate] = useState(new Date());
-
-    const handleArrowPress = (direction) => {
-        const newDate = new Date(date);
-        if (direction === 'left') {
-            newDate.setDate(date.getDate() - 1);
-            console.log('lett----------->')
-        } else if (direction === 'right') {
-            newDate.setDate(date.getDate() + 1);
-            console.log('Right----------------->')
-        }
-        setDate(newDate);
-    };
+  
 
     // searching user VisitList state and method
     const [filteredItems, setFilteredItems] = useState(VisitList);
@@ -165,12 +163,31 @@ const HomeScreen = (props) => {
         handleGetDirections();
     }
 
-
     // to display Current Day month and year
-    const today = moment().format('Do');
-    const today1 = moment().format('MMMM  YYYY');
+    const [date, setDate] = useState(new Date());
 
+    const handleArrowPress = (direction) => {
+        const newDate = new Date(date);
+        if (direction === 'left') {
+            newDate.setDate(newDate.getDate() - 1);
+        } else if (direction === 'right') {
+            newDate.setDate(newDate.getDate() + 1);
+        }
+        setDate(newDate);
+    };
 
+    const today = moment(date).format('Do');
+    const today1 = moment(date).format('MMMM, YYYY');
+    const today2 = moment(date).format('MMMM');
+    const daysInMonth = moment(date).daysInMonth();
+
+    const data = {};
+    for (let i = 1; i <= daysInMonth; i++) {
+        const day = moment(date).date(i).format('Do');
+        data[day] = `Data for ${moment(date).date(i).format('MMMM Do, YYYY')}`;
+    }
+
+    const displayData = data[today];
 
 
     // Navigate g-MAp by google Api key
@@ -252,7 +269,7 @@ const HomeScreen = (props) => {
                     },
                     {
                         enableHighAccuracy: true,
-                        timeout: 20000,
+                        timeout: 30000,
                     }
                 );
             } catch (error) {
@@ -272,7 +289,32 @@ const HomeScreen = (props) => {
             <View style={styles.TopBar}>
                 <TouchableOpacity style={{ color: '#ffffff', justifyContent: 'center', marginLeft: 20, marginTop: 8 }}><Text>User</Text></TouchableOpacity>
                 <Text style={{ color: '#ffffff', marginLeft: 10, marginTop: 15 }}>Ajeet Kumar</Text>
-                <Text style={{ color: 'orange', marginLeft: 150, marginTop: 15 }}>Logout</Text>
+                <View>
+                    <TouchableOpacity
+                        onPress={() => { showAlert1() }}>
+                        <Text style={{ color: 'orange', marginLeft: 150, marginTop: 15 }}>Logout</Text>
+                    </TouchableOpacity>
+
+                    <AwesomeAlert
+                        show={showAlert}
+                        showProgress={false}
+                        title="Logout"
+                        message="Are You sure You want to Logout!"
+                        closeOnTouchOutside={true}
+                        closeOnHardwareBackPress={false}
+                        showCancelButton={true}
+                        showConfirmButton={true}
+                        cancelText="No"
+                        confirmText="Yes"
+                        confirmButtonColor="#DD6B55"
+                        onCancelPressed={() => {
+                            hideAlert();
+                        }}
+                        onConfirmPressed={() => {
+                            navigation.replace('LoginScreen')
+                        }}
+                    />
+                </View>
             </View>
 
 
@@ -281,16 +323,17 @@ const HomeScreen = (props) => {
                 <Text style={styles.dateText}>{today}</Text>
                 <TouchableOpacity onPress={() => { handleArrowPress('right') }}><Text style={{ color: '#000000', fontSize: 55 }}>{'>'}</Text></TouchableOpacity>
 
-                <View style={{justifyContent:'center',marginHorizontal:80, alignItems:'center'}}>
+                <View style={{ justifyContent: 'center', marginHorizontal: 30, alignItems: 'center' }}>
                     <TouchableOpacity onPress={() => {
                         navigation.navigate('DashboardScreen')
                     }}>
-                        <Text style={{ color: '#084970', fontWeight: 700,fontSize: 16, textDecorationLine: 'underline' }}>Dashboard</Text>
+                        <Text style={{ color: '#084970', fontWeight: 700, fontSize: 16, marginLeft: 60, textDecorationLine: 'underline' }}>Dashboard</Text>
                     </TouchableOpacity>
                 </View>
             </View>
 
-            <Text style={{ fontSize: 14, marginRight: 250, color: '#000000' }}>{today1}</Text>
+            <Text style={{ fontSize: 14, marginRight: 220, color: '#000000' }}>{today1}</Text>
+            <Text style={{ fontSize: 14, color: '#000000' }}>{displayData}</Text>
 
 
             <View style={styles.UpperButtonRow}>
