@@ -1,0 +1,4 @@
+signup
+Login ke response me sirf token bhejega
+get Visit pass token in header
+Token decode -> userid, email

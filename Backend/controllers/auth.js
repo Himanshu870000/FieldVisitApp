@@ -3,6 +3,7 @@ const { check, validationResult } = require("express-validator");
 var jwt = require("jsonwebtoken");
 var expressJwt = require("express-jwt");
 const bcrypt = require("bcryptjs");
+const Visit = require('../Models/Visit');
 
 
 
@@ -87,9 +88,11 @@ exports.signup = async (req, res) => {
     });
 };
 
+
 exports.signin = async (req, res) => {
     const errors = validationResult(req);
     const { email, password } = req.body;
+    console.log(email)
 
     if (!errors.isEmpty()) {
         return res.status(422).json({
@@ -98,6 +101,7 @@ exports.signin = async (req, res) => {
     }
 
     try {
+        console.log(email)
         let user = await User.findOne({ email });
 
         if (!user) {
@@ -143,6 +147,60 @@ exports.signin = async (req, res) => {
         res.status(500).json({ error: "sign-in error" });
     }
 };
+
+
+
+
+// create a new visit
+exports.myVisit = (req, res) => {
+  const visit = new Visit({
+    visitDate: req.body.visitDate,
+    visitorName: req.body.visitorName,
+    street: req.body.street,
+    city: req.body.city,
+    state: req.body.state,
+    country: req.body.country,
+    phone: req.body.phone,
+    status: req.body.status,
+    checkIn: req.body.checkIn,
+    checkOut: req.body.checkOut,
+    geoLocation: req.body.geoLocation,
+    user: req.body.user,
+    dayVisitPlan: req.body.dayVisitPlan,
+  });
+
+  visit.save()
+    .then(() => {
+      res.status(201).send(visit);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send({ message: 'Error creating visit' });
+    });
+};
+
+
+
+exports.getVisitById = async (req, res) => {
+    try {
+        console.log(req.headers)
+        const token = req.headers.authorization
+        if(!token){
+            return res.status(400).json({message:'Authorisation token is required'})
+        }
+        console.log(token)
+
+        const decodedToken = jwt.decode(token)
+console.log(decodedToken)
+        const visitData =await Visit.find({user:decodedToken.user.id})
+        console.log(visitData)
+    return res.status(200).json(visitData)
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'An error occurred while retrieving the visit' });
+    }
+  };
+
 
 exports.signout = (req, res) => {
     res.clearCookie("token");

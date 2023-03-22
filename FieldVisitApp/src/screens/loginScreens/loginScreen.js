@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Button, StyleSheet, Text, TextInput, View,Linking,Platform, TouchableOpacity, Image, ToastAndroid, ScrollView, Alert } from "react-native";
+import { Button, StyleSheet, Text, TextInput, View, Linking, Platform, TouchableOpacity, Image, ToastAndroid, ScrollView, Alert } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { CountryPicker } from "react-native-country-codes-picker";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoginApi } from "../../API/AuthApi";
 import Geolocation from "@react-native-community/geolocation";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getVisit } from "../../API/AuthApi/getVisitApi";
 
 const LoginScreen = (props) => {
     const { navigation } = props;
@@ -34,47 +35,47 @@ const LoginScreen = (props) => {
     }
 
     const handleLogin = async () => {
-    //     try {
+            try {
 
-    //         if (email.length <= 2) {
-    //             ToastAndroid.showWithGravity(
-    //                 "Please Enter Correct Email",
-    //                 ToastAndroid.SHORT,
-    //                 ToastAndroid.CENTER,
-    //             );
-    //         } else if (password.length < 6) {
-    //             ToastAndroid.showWithGravity(
-    //                 "Please Enter Correct Password",
-    //                 ToastAndroid.SHORT,
-    //                 ToastAndroid.CENTER,
-    //             );
-    //         } else {
+                if (email.length <= 2) {
+                    ToastAndroid.showWithGravity(
+                        "Please Enter Correct Email",
+                        ToastAndroid.SHORT,
+                        ToastAndroid.CENTER,
+                    );
+                } else if (password.length < 6) {
+                    ToastAndroid.showWithGravity(
+                        "Please Enter Correct Password",
+                        ToastAndroid.SHORT,
+                        ToastAndroid.CENTER,
+                    );
+                } else {
 
-    //             const payload = {
-    //                 email,
-    //                 password,
-    //             }
-    //             LoginApi(payload).then(async (response) => {
-    //                 if (response.status > 0 && response.status < 400) {
-    //                     const token = response.data.token;
-    //                     await AsyncStorage.setItem('token', token);
-    //                     ToastAndroid.showWithGravity(
-    //                         "Succesfully Logged in",
-    //                         ToastAndroid.SHORT,
-    //                         ToastAndroid.CENTER,
-    //                     );
-                        
-                        navigation.replace('HomeScreen');
+                    const payload = {
+                        email,
+                        password
+                    }
+                    LoginApi(payload).then(async (response) => {
+                        if (response.status > 0 && response.status < 400) {
+                            const token = response.data.token;
+                            await AsyncStorage.setItem('token', token);
+                            ToastAndroid.showWithGravity(
+                                "Succesfully Logged in",
+                                ToastAndroid.SHORT,
+                                ToastAndroid.CENTER,
+                            );
+                           console.log('token---------->',token)
+                            props.navigation.replace('HomeScreen',{token:token},{email:email})
 
-    //                 } else {
-    //                     console.log(response.status, 'Login Error');
-    //                 }
-    //             });
-    //         }
-    //     } catch (error) {
+                        } else {
+                            console.log(response.status, 'Login Error');
+                        }
+                    });
+                }
+            } catch (error) {
 
-    //         console.error(error);
-    //     }
+                console.error(error);
+            }
     };
 
     return (
@@ -117,11 +118,13 @@ const LoginScreen = (props) => {
                                 <TextInput
                                     value={email}
                                     style={styles.inputEmail}
-                                    placeholder="Enter Email"
+                                    placeholder="Enter Email                                                 "
                                     placeholderTextColor="#4F555A"
                                     keyboardType="email-address"
                                     onChangeText={(text) => setEmail(text)}
                                 />
+                                {/* <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, width: 260,}}></View> */}
+
 
                             </View>
                             <View style={styles.InputPassRow}>
@@ -130,7 +133,7 @@ const LoginScreen = (props) => {
                                 <TextInput
                                     value={password}
                                     style={styles.inputEmail}
-                                    placeholder="Password"
+                                    placeholder="Password                      "
                                     placeholderTextColor="#4F555A"
                                     keyboardType="default"
                                     secureTextEntry={true}
@@ -215,7 +218,7 @@ const LoginScreen = (props) => {
 
                         </View>
                     )}
-                    <View style={{ height: 80 }}></View>
+                    <View style={{ height: 150 }}></View>
 
                 </View>
 
@@ -253,11 +256,10 @@ const styles = StyleSheet.create({
     inputEmail: {
         marginHorizontal: 12,
         paddingVertical: 5,
-        borderBottomWidth: 1,
-        borderStartWidth: 2,
-        borderEndWidth: 200,
-        fontSize: 14,
+        borderBottomWidth:1,
+        fontSize: 12,
         fontWeight: '400',
+        color:'#000000'
     },
 
     inputPhone: {
@@ -266,7 +268,7 @@ const styles = StyleSheet.create({
         marginLeft: 90,
         borderStartWidth: 2,
         borderEndWidth: 200,
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '400',
     },
     box: {

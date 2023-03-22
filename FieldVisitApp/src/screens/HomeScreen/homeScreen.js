@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity, PermissionsAndroid, FlatList, Image, Linking, ToastAndroid, ScrollView, Alert } from "react-native";
 import moment from 'moment';
 import { Card } from "react-native-elements";
 import Geolocation from "@react-native-community/geolocation";
 import AwesomeAlert from "react-native-awesome-alerts";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getVisit } from "../../API/AuthApi/getVisitApi";
+import axios from "axios";
 
 const VisitList = [
     {
@@ -35,19 +38,67 @@ const HomeScreen = (props) => {
     // navigate or replace screen 
     const { navigation } = props;
 
+    const [visits, setVisits] = useState([]);
+    const [resData, setResData] = useState(null);
+
+    const [name,setName] = useState([]);
+
+    // to display Current Day month and year
+    const [date, setDate] = useState(new Date());
+
+    const token = props.route.params.token
+
+    const getVisit = async () => {
+        try {
+            const response = await axios.get('http://192.168.0.157:8000/api/visits/', {
+                headers: {
+                    authorization: `${token}`,
+                },
+            });
+          console.log('DATA------------------->', response.data);
+            setResData(response.data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+  
+
+    useEffect(() => {
+        if(resData == null){
+            getVisit();
+        }
+    }, [resData]);
+
+    
+    const {filterdData} = useMemo(() => {
+        var filterdData = null;
+            if(resData != null){
+                filterdData = resData.filter(e => new Date(e.visitDate).getDate() == new Date(date).getDate());
+            }
+        return {
+            filterdData: filterdData,
+        }
+    }, [date,filterdData]);
+
+
+    console.log('ENUM--------------------->',filterdData)
+
+
 
 
     const [currentLocation, setCurrentLocation] = useState(null);
-
-
     // start and end day state
     const [startDay, setStartDay] = useState(false);
     const [endDay, setEndDay] = useState(false);
-    const[showAlert,setShowAlert] = useState()
-    
-    const showAlert1 = () => {
+    const [showAlert, setShowAlert] = useState()
+
+    const showAlert1 = async () => {
         setShowAlert(true);
+        await AsyncStorage.removeItem('token');
+
     };
+
 
     const hideAlert = () => {
         setShowAlert(false);
@@ -55,7 +106,7 @@ const HomeScreen = (props) => {
     // search query state
     const [searchQuery, setSearchQuery] = useState('');
 
-  
+
 
     // searching user VisitList state and method
     const [filteredItems, setFilteredItems] = useState(VisitList);
@@ -163,8 +214,7 @@ const HomeScreen = (props) => {
         handleGetDirections();
     }
 
-    // to display Current Day month and year
-    const [date, setDate] = useState(new Date());
+    
 
     const handleArrowPress = (direction) => {
         const newDate = new Date(date);
@@ -196,7 +246,10 @@ const HomeScreen = (props) => {
             Alert.alert('Please start your day first');
             return;
         }
-        navigation.navigate('MapViewScreen')
+
+        props.navigation.navigate('MapViewScreen',{
+                filterdData
+        })
     };
 
 
@@ -291,7 +344,10 @@ const HomeScreen = (props) => {
                 <Text style={{ color: '#ffffff', marginLeft: 10, marginTop: 15 }}>Ajeet Kumar</Text>
                 <View>
                     <TouchableOpacity
-                        onPress={() => { showAlert1() }}>
+                        onPress={() => {
+                            showAlert1()
+
+                        }}>
                         <Text style={{ color: 'orange', marginLeft: 150, marginTop: 15 }}>Logout</Text>
                     </TouchableOpacity>
 
@@ -383,28 +439,33 @@ const HomeScreen = (props) => {
 
 
                     <ScrollView>
-                        {filteredItems.map(item => (
-                            <View style={styles.cardContainer} key={item.id}>
-                                <Text style={{ color: '#ffffff', fontWeight: '500', marginLeft: 30, marginTop: 20 }}>Amar Singh</Text>
-                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Address : JP Nagar 7th Phase, Bangalore, Karnataka, India, 560068</Text>
-                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Phone Number</Text>
-                                <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Status : Pending</Text>
-                                <View style={{ flexDirection: 'row', marginTop: 20 }}>
-                                    <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={startVisitHandle}>
-                                        <Text style={styles.StartButtonText}>Start Visit</Text>
-                                    </TouchableOpacity>
+                        {filterdData != null ? filterdData.map(item => {
+                            console.log('item-------->',item);
 
-                                    <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={handleNavigate}>
-                                        <Text style={styles.StartButtonText}>Navigate</Text>
+                            return (
+                                <View style={styles.cardContainer} key={item._id}>
+                                    <Text style={{ color: '#ffffff', fontWeight: '500', marginLeft: 30, marginTop: 20 }}>{item.visitorName}</Text>
+                                    <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Address : {item.city} 7th Phase, Bangalore, Karnataka, India, 560068</Text>
+                                    <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Phone Number : {item.phone}</Text>
+                                    <Text style={{ color: '#ffffff', fontWeight: '300', marginLeft: 30, marginTop: 10, fontSize: 10 }}>Status : Pending</Text>
+                                    <View style={{ flexDirection: 'row', marginTop: 20 }}>
+                                        <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={startVisitHandle}>
+                                            <Text style={styles.StartButtonText}>Start Visit</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity style={startDay ? styles.activeButton : styles.inactiveButton} onPress={handleNavigate}>
+                                            <Text style={styles.StartButtonText}>Navigate</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <TouchableOpacity style={styles.rescheduleButton} onPress={() => {
+                                        navigation.navigate('RescheduleScreen')
+                                    }}>
+                                        <Text style={styles.rescheduleText}>Reschedule</Text>
                                     </TouchableOpacity>
                                 </View>
-                                <TouchableOpacity style={styles.rescheduleButton} onPress={() => {
-                                    navigation.navigate('RescheduleScreen')
-                                }}>
-                                    <Text style={styles.rescheduleText}>Reschedule</Text>
-                                </TouchableOpacity>
-                            </View>
-                        ))}
+                            )
+                        })
+                        : null}
                     </ScrollView>
 
 

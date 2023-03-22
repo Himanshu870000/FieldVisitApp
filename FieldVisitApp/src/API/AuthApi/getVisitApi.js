@@ -1,13 +1,14 @@
 import { AxiosRequest, getToken, HOST } from "../";
 
 
-export const LoginApi = async (payload) => {
-    const url = `${HOST}/signin`;
+export const getVisit = async (payload,email) => {
+   console.log('emailllllllll------------------->',email)
+
+    const url = `${HOST}/visits`;
 	try {
         // const token = await getToken();
         // AxiosRequest.defaults.headers.Authorization = `Token ${token}`;
         const response = await AxiosRequest.post(url, payload);
-         console.log(response);
         return response;
     } catch (error) {
         if (error.response) {

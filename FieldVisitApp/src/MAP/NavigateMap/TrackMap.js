@@ -10,6 +10,8 @@ const MapViewScreen = (props) => {
 
     const [selectedImage, setSelectedImage] = useState(null);
 
+    console.log('props------------->',props.route.params.filterdData.checkIn)
+
     const pickImage = () => {
         Alert.alert(
           'Select Image Source',
